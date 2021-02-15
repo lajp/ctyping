@@ -69,12 +69,15 @@ int main(int argc, char **argv)
 		else if(input == (char)127) // backspace
 		{
 			i--;
-			wmove(textwin, 0, i);
-			wattron(textwin, COLOR_PAIR(1));
-			waddch(textwin, (int)text[i]);
-			wattroff(textwin, COLOR_PAIR(1));
-			refresh();
-			wrefresh(textwin);
+			if(i >= 0)
+			{
+				wmove(textwin, 0, i);
+				wattron(textwin, COLOR_PAIR(1));
+				waddch(textwin, (int)text[i]);
+				wattroff(textwin, COLOR_PAIR(1));
+				refresh();
+				wrefresh(textwin);
+			}
 			i--;
 		}
 		else // wrong character
