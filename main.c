@@ -48,8 +48,7 @@ int main(int argc, char **argv)
 	init_pair(3, COLOR_RED, COLOR_BLACK);
 	WINDOW *win = init_window(w.ws_row, w.ws_col);
 	char text[2048];
-	char* ptr = text;
-	WINDOW* textwin = filetoscreen(txtfile, win, ptr);
+	WINDOW* textwin = filetoscreen(txtfile, win, &text[0]);
 	for(int i = 0; i < (int)strlen(text); ++i)
 	{
 		wmove(textwin, 0, i);
