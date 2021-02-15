@@ -1,0 +1,1 @@
+This is some text that has been written for the sole purpose of testing the ctyping program.
