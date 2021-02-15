@@ -62,8 +62,6 @@ int main(int argc, char **argv)
 			waddch(textwin, (int)input);
 			wattroff(textwin, COLOR_PAIR(2));
 			wmove(textwin, 0, i+1);
-			refresh();
-			wrefresh(textwin);
 		}
 		else if(input == (char)127) // backspace
 		{
@@ -74,8 +72,6 @@ int main(int argc, char **argv)
 				wattron(textwin, COLOR_PAIR(1));
 				waddch(textwin, (int)text[i]);
 				wattroff(textwin, COLOR_PAIR(1));
-				refresh();
-				wrefresh(textwin);
 			}
 			i--;
 		}
@@ -85,8 +81,6 @@ int main(int argc, char **argv)
 			waddch(textwin, (int)current);
 			wattroff(textwin, COLOR_PAIR(3));
 			wmove(textwin, 0, i+1);
-			refresh();
-			wrefresh(textwin);
 		}
 		i = (i<-1) ? -1 : i;
 	}
