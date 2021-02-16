@@ -5,7 +5,7 @@
 
 WINDOW* init_window(int srow, int scol)
 {
-	WINDOW* borderwin = newwin(srow-4, scol-4, 2, 2);
+	WINDOW* borderwin = newwin(srow-8, scol-4, 6, 2);
 	box(borderwin, 0, 0);
 	refresh();
 	wrefresh(borderwin);
@@ -17,7 +17,7 @@ WINDOW* filetoscreen(FILE* f, WINDOW* win, char* text)
 {
 	int row, col;
 	getmaxyx(win, row, col);
-	WINDOW* textwin = newwin(row-2, col-2, 3, 3);
+	WINDOW* textwin = newwin(row-5, col-2, 7, 3);
 	refresh();
 	wrefresh(textwin);
 	fgets(text, 2048, f);
@@ -27,7 +27,23 @@ WINDOW* filetoscreen(FILE* f, WINDOW* win, char* text)
 	wrefresh(textwin);
 	return textwin;
 }
-
+WINDOW* init_statwin(int correct, int incorrect)
+{
+	WINDOW* statwin = newwin(5, 40, 0, 0);
+	box(statwin, 0, 0);
+	mvwprintw(statwin, 1, 1, "Correct characters: %d", correct);
+	mvwprintw(statwin, 3, 1, "Mistakes: %d", incorrect);
+	refresh();
+	wrefresh(statwin);
+	return statwin;
+}
+void update_statwin(WINDOW* statwin, int correct, int incorrect)
+{
+	mvwprintw(statwin, 1, 1, "Correct characters: %d", correct);
+	mvwprintw(statwin, 3, 1, "Mistakes: %d", incorrect);
+	refresh();
+	wrefresh(statwin);
+}
 int main(int argc, char **argv)
 {
 	FILE* txtfile = fopen("texts.txt", "r");
@@ -52,16 +68,19 @@ int main(int argc, char **argv)
 	getmaxyx(stdscr, ymax, xmax);
 	WINDOW* borderwin = init_window(ymax, xmax);
 	char text[2048];
+	int correct, incorrect;
+	correct = incorrect = 0;
 	WINDOW* textwin = filetoscreen(txtfile, borderwin, &text[0]);
+	WINDOW* statwin = init_statwin(correct, incorrect);
 	for(int i = 0; i < (int)strlen(text); ++i)
 	{
 		wmove(textwin, 0, i);
-		refresh();
 		wrefresh(textwin);
 		char input = (char)getch();
 		char current = text[i];
 		if(input == current) // correct character
 		{
+			correct++;
 			wattron(textwin, COLOR_PAIR(2));
 			waddch(textwin, (int)input);
 			wattroff(textwin, COLOR_PAIR(2));
@@ -73,6 +92,10 @@ int main(int argc, char **argv)
 			if(i >= 0)
 			{
 				wmove(textwin, 0, i);
+				if((winch(textwin) & A_COLOR) == COLOR_PAIR(2))
+					correct--;
+				else
+					incorrect--;
 				wattron(textwin, COLOR_PAIR(1));
 				waddch(textwin, (int)text[i]);
 				wattroff(textwin, COLOR_PAIR(1));
@@ -81,12 +104,14 @@ int main(int argc, char **argv)
 		}
 		else // wrong character
 		{
+			incorrect++;
 			wattron(textwin, COLOR_PAIR(3));
 			waddch(textwin, (int)current);
 			wattroff(textwin, COLOR_PAIR(3));
 			wmove(textwin, 0, i+1);
 		}
 		i = (i<-1) ? -1 : i;
+		update_statwin(statwin, correct, incorrect);
 	}
 	getch();
 	endwin();
