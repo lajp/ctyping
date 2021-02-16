@@ -106,8 +106,16 @@ int main(int argc, char **argv)
 		{
 			incorrect++;
 			wattron(textwin, COLOR_PAIR(3));
+			if(text[i] == ' ')
+			{
+				wattron(textwin, A_REVERSE);
+			}
 			waddch(textwin, (int)current);
 			wattroff(textwin, COLOR_PAIR(3));
+			if(text[i] == ' ')
+			{
+				wattroff(textwin, A_REVERSE);
+			}
 			wmove(textwin, 0, i+1);
 		}
 		i = (i<-1) ? -1 : i;
