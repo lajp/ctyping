@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 	initscr(); // Initialize screen
 	if(!has_colors())
 	{
-		perror("Cannot detect color support\n");
+		perror("Cannot detect color support");
 		return -EPROTONOSUPPORT; // FIXME: Possibly not the correct errno
 	}
 	start_color();
