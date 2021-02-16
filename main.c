@@ -27,22 +27,22 @@ WINDOW* filetoscreen(FILE* f, WINDOW* win, char* text)
 	wrefresh(textwin);
 	return textwin;
 }
-WINDOW* init_statwin(int correct, int incorrect)
+void update_statwin(WINDOW* statwin, int correct, int incorrect, int mistake)
+{
+	mvwprintw(statwin, 1, 1, "Correct characters: %d", correct);
+	mvwprintw(statwin, 2, 1, "Incorrect characters: %d", incorrect);
+	mvwprintw(statwin, 3, 1, "Mistakes: %d", mistake);
+	refresh();
+	wrefresh(statwin);
+}
+WINDOW* init_statwin(int correct, int incorrect, int mistake)
 {
 	WINDOW* statwin = newwin(5, 40, 0, 0);
 	box(statwin, 0, 0);
-	mvwprintw(statwin, 1, 1, "Correct characters: %d", correct);
-	mvwprintw(statwin, 3, 1, "Mistakes: %d", incorrect);
+	update_statwin(statwin, correct, incorrect, mistake);
 	refresh();
 	wrefresh(statwin);
 	return statwin;
-}
-void update_statwin(WINDOW* statwin, int correct, int incorrect)
-{
-	mvwprintw(statwin, 1, 1, "Correct characters: %d", correct);
-	mvwprintw(statwin, 3, 1, "Mistakes: %d", incorrect);
-	refresh();
-	wrefresh(statwin);
 }
 FILE* open_textfile(int argc, char** argv)
 {
@@ -82,10 +82,10 @@ int main(int argc, char **argv)
 	getmaxyx(stdscr, ymax, xmax);
 	WINDOW* borderwin = init_window(ymax, xmax);
 	char text[2048];
-	int correct, incorrect;
-	correct = incorrect = 0;
+	int correct, incorrect, mistake;
+	correct = incorrect = mistake = 0;
 	WINDOW* textwin = filetoscreen(txtfile, borderwin, &text[0]);
-	WINDOW* statwin = init_statwin(correct, incorrect);
+	WINDOW* statwin = init_statwin(correct, incorrect, mistake);
 	for(int i = 0; i < (int)strlen(text)-1; ++i)
 	{
 		wmove(textwin, 0, i);
@@ -118,6 +118,7 @@ int main(int argc, char **argv)
 		}
 		else // wrong character
 		{
+			mistake++;
 			incorrect++;
 			wattron(textwin, COLOR_PAIR(3));
 			if(text[i] == ' ')
@@ -133,7 +134,7 @@ int main(int argc, char **argv)
 			wmove(textwin, 0, i+1);
 		}
 		i = (i<-1) ? -1 : i;
-		update_statwin(statwin, correct, incorrect);
+		update_statwin(statwin, correct, incorrect, mistake);
 	}
 	getch();
 	endwin();
