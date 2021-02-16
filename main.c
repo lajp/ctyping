@@ -1,4 +1,3 @@
-#include <sys/ioctl.h>
 #include <stdio.h>
 #include <errno.h>
 #include <ncurses.h>
@@ -37,8 +36,6 @@ int main(int argc, char **argv)
 		perror("Cannot open file texts.txt\n");
 		return -ENOENT;
 	}
-	struct winsize w;
-	ioctl(0, TIOCGWINSZ, &w);
 	initscr(); // Initialize screen
 	if(!has_colors())
 	{
@@ -51,7 +48,9 @@ int main(int argc, char **argv)
 	init_pair(1, COLOR_WHITE, COLOR_BLACK);
 	init_pair(2, COLOR_GREEN, COLOR_BLACK);
 	init_pair(3, COLOR_RED, COLOR_BLACK);
-	WINDOW* borderwin = init_window(w.ws_row, w.ws_col);
+	int ymax, xmax;
+	getmaxyx(stdscr, ymax, xmax);
+	WINDOW* borderwin = init_window(ymax, xmax);
 	char text[2048];
 	WINDOW* textwin = filetoscreen(txtfile, borderwin, &text[0]);
 	for(int i = 0; i < (int)strlen(text); ++i)
