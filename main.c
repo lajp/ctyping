@@ -44,19 +44,33 @@ void update_statwin(WINDOW* statwin, int correct, int incorrect)
 	refresh();
 	wrefresh(statwin);
 }
+FILE* open_textfile(int argc, char** argv)
+{
+	char* filename;
+	char* dfilename[] = { "texts.txt", NULL };
+	if(argc < 2)
+	{
+		filename = *dfilename;
+	}
+	else
+	{
+		filename = argv[argc-1];
+	}
+	return fopen(filename, "r");
+}
 int main(int argc, char **argv)
 {
-	FILE* txtfile = fopen("texts.txt", "r");
+	FILE* txtfile = open_textfile(argc, argv);
 	if(txtfile == NULL)
 	{
-		perror("Cannot open file texts.txt\n");
+		perror("Cannot open input file: ");
 		return -ENOENT;
 	}
 	initscr(); // Initialize screen
 	if(!has_colors())
 	{
 		perror("Cannot detect color support\n");
-		return -EPROTONOSUPPORT; // Possibly not the correct errno
+		return -EPROTONOSUPPORT; // FIXME: Possibly not the correct errno
 	}
 	start_color();
 	noecho();
