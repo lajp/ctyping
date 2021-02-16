@@ -6,13 +6,13 @@
 
 WINDOW* init_window(int srow, int scol)
 {
-	WINDOW *win = newwin(srow-4, scol-4, 2, 2);
-	box(win, 0, 0);
+	WINDOW* borderwin = newwin(srow-4, scol-4, 2, 2);
+	box(borderwin, 0, 0);
 	refresh();
-	wrefresh(win);
+	wrefresh(borderwin);
 	const char* title[] = { "C-typing", NULL};
 	mvprintw(0,(int)scol/2-(sizeof title/2),*title);
-	return win;
+	return borderwin;
 }
 WINDOW* filetoscreen(FILE* f, WINDOW* win, char* text)
 {
@@ -34,21 +34,26 @@ int main(int argc, char **argv)
 	FILE* txtfile = fopen("texts.txt", "r");
 	if(txtfile == NULL)
 	{
-		perror("Cannot open file texts.txt");
+		perror("Cannot open file texts.txt\n");
 		return -ENOENT;
 	}
 	struct winsize w;
 	ioctl(0, TIOCGWINSZ, &w);
 	initscr(); // Initialize screen
+	if(!has_colors())
+	{
+		perror("Cannot detect color support\n");
+		return -EPROTONOSUPPORT; // Possibly not the correct errno
+	}
 	start_color();
 	noecho();
 	cbreak();
 	init_pair(1, COLOR_WHITE, COLOR_BLACK);
 	init_pair(2, COLOR_GREEN, COLOR_BLACK);
 	init_pair(3, COLOR_RED, COLOR_BLACK);
-	WINDOW *win = init_window(w.ws_row, w.ws_col);
+	WINDOW* borderwin = init_window(w.ws_row, w.ws_col);
 	char text[2048];
-	WINDOW* textwin = filetoscreen(txtfile, win, &text[0]);
+	WINDOW* textwin = filetoscreen(txtfile, borderwin, &text[0]);
 	for(int i = 0; i < (int)strlen(text); ++i)
 	{
 		wmove(textwin, 0, i);
