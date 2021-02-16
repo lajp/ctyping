@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 	correct = incorrect = 0;
 	WINDOW* textwin = filetoscreen(txtfile, borderwin, &text[0]);
 	WINDOW* statwin = init_statwin(correct, incorrect);
-	for(int i = 0; i < (int)strlen(text); ++i)
+	for(int i = 0; i < (int)strlen(text)-1; ++i)
 	{
 		wmove(textwin, 0, i);
 		wrefresh(textwin);
