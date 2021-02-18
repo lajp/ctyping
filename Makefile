@@ -1,5 +1,5 @@
-all: main.c
-	gcc -Wall -lncurses -o ctyping main.c
+all: ctyping.c
+	clang -Wall -lncurses -lpthread -o ctyping ctyping.c
 
 clean:
 	rm -f ctyping
